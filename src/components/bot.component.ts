@@ -1,0 +1,109 @@
+import { createLogger } from '@metafoks/app';
+import { Telegraf } from 'telegraf';
+import { ChatLoader } from '../loaders';
+import { ConfigWithTelegram } from '../config';
+import { TelegramCommandHandler, TelegramMessageHandler } from '../abstract';
+
+export class BotComponent {
+    private logger = createLogger(BotComponent);
+
+    public constructor(
+        private deps: {
+            config: ConfigWithTelegram;
+            telegraf: Telegraf;
+            telegramMessageHandler: TelegramMessageHandler;
+            telegramCommandHandler: TelegramCommandHandler;
+            getChat: ChatLoader;
+        },
+    ) {}
+
+    /**
+     * Starts messages handling
+     */
+    startMessageHandling() {
+        const { telegraf, telegramMessageHandler, getChat } = this.deps;
+
+        telegraf.on('message', async context => {
+            const { chat, message } = context;
+
+            if (chat) {
+                const instance = getChat(chat.id);
+                this.logger.debug(`on received message from chatId=${instance.chatId}`);
+                await telegramMessageHandler.onMessage({
+                    context,
+                    chat: instance,
+                    message,
+                    chatId: instance.chatId,
+                });
+            } else {
+                this.logger.warn('chat not found in context');
+                this.logger.trace(JSON.stringify(context));
+            }
+        });
+
+        this.logger.info('message handling started');
+    }
+
+    /**
+     * Starts commands handling
+     */
+    startCommandsHandling() {
+        const { telegraf, getChat, config } = this.deps;
+        const { telegramBot } = config;
+
+        if ((telegramBot.supportedCommands ?? []).length > 0) {
+            if (!('telegramCommandHandler' in this.deps)) {
+                this.logger.error('telegramCommandHandler not found');
+                return;
+            }
+
+            const telegramCommandHandler = this.deps.telegramCommandHandler;
+
+            for (const command of telegramBot.supportedCommands ?? []) {
+                this.logger.debug(`registering command=${command} handler`);
+                telegraf.command(command, async context => {
+                    const { chat, message } = context;
+                    if (chat) {
+                        const instance = getChat(chat.id);
+                        this.logger.debug(`on received command=${command} from chatId=${instance.chatId}`);
+                        await telegramCommandHandler.onCommand({
+                            context,
+                            chat: instance,
+                            chatId: instance.chatId,
+                            command,
+                        });
+                    } else {
+                        this.logger.warn('chat not found in command context');
+                        this.logger.trace(JSON.stringify(context));
+                    }
+                });
+            }
+
+            this.logger.info('commands handling started');
+        }
+    }
+
+    public async start() {
+        const { telegraf } = this.deps;
+
+        this.startCommandsHandling();
+        this.startMessageHandling();
+
+        // Enable graceful stop
+        process.once('SIGINT', () => {
+            this.logger.debug('stopping bot by SIGINT');
+
+            telegraf.stop('SIGINT');
+            this.logger.info('bot stopped by SIGINT');
+        });
+        process.once('SIGTERM', () => {
+            this.logger.debug('stopping bot by SIGTERM');
+
+            telegraf.stop('SIGTERM');
+            this.logger.info('bot stopped by SIGTERM');
+        });
+
+        this.logger.info('telegraf started');
+        await telegraf.launch();
+    }
+}

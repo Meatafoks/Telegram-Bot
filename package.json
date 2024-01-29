@@ -1,0 +1,30 @@
+{
+  "name": "@metafoks/telegram-bot",
+  "version": "1.0.0",
+  "description": "Metafoks telegram bot extension",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "testApp": "ts-node src/__tests___/testApplication.ts"
+  },
+  "author": "Yakov Foks <notafoks@yandex.ru>",
+  "license": "ISC",
+  "devDependencies": {
+    "@metafoks/eslint-config": "1.0.0",
+    "@metafoks/prettier": "1.0.0",
+    "@types/node": "^20.11.10",
+    "eslint": "8.56.0",
+    "prettier": "3.2.4",
+    "typescript": "^5.3.3"
+  },
+  "prettier": "@metafoks/prettier",
+  "eslintConfig": {
+    "extends": [
+      "@metafoks/eslint-config"
+    ]
+  },
+  "dependencies": {
+    "@metafoks/app": "^1.0.8",
+    "telegraf": "^4.15.3"
+  }
+}
