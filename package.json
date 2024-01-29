@@ -3,12 +3,24 @@
   "version": "1.0.0",
   "description": "Metafoks telegram bot extension",
   "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.(js|ts)\"",
+    "lint": "eslint src --fix --ext .js,.ts",
     "testApp": "ts-node src/__tests___/testApplication.ts"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Meatafoks/Telegram-Bot"
+  },
   "author": "Yakov Foks <notafoks@yandex.ru>",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@metafoks/eslint-config": "1.0.0",
     "@metafoks/prettier": "1.0.0",

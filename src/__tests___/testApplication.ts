@@ -9,7 +9,7 @@ import TelegramMessageHandlerComponent from './telegramMessageHandler.component'
 @InlineConfig<ConfigWithTelegram>({
     telegramBot: {
         token: process.env.TOKEN!,
-        startMessageSend: true,
+        allowSendStartMessage: true,
         supportedCommands: ['a', 'b'],
     },
     metafoks: {
