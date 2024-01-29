@@ -1,6 +1,6 @@
 {
   "name": "@metafoks/telegram-bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Metafoks telegram bot extension",
   "main": "lib/index.js",
   "files": [
@@ -10,7 +10,7 @@
     "build": "tsc",
     "format": "prettier --write \"src/**/*.(js|ts)\"",
     "lint": "eslint src --fix --ext .js,.ts",
-    "testApp": "ts-node src/__tests___/testApplication.ts"
+    "testApp": "ts-node src/__tests__/testApplication.ts"
   },
   "publishConfig": {
     "access": "public"
