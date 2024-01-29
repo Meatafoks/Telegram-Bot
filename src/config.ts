@@ -1,7 +1,7 @@
 export interface TelegramBotConfig {
     token: string;
     creatorId?: string;
-    startMessageSend?: boolean;
+    allowSendStartMessage?: boolean;
     supportedCommands?: string[];
 }
 

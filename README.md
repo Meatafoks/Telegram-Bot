@@ -1,26 +1,41 @@
-# Telegram Bot
+# Metafoks Telegram Bot
 
-Metafoks application extension
+Extension for Metafoks Application
 
-## How to use
+[Русская документация](locale/ru.md)
 
-Install package
+- [Installation](#installation)
+    - [1. Project Preparation](#1-project-preparation)
+    - [2. Configuration](#2-configuration)
+    - [3. Installation of the Extension in the Project](#3-installation-of-the-extension-in-the-project)
+    - [4. Registration of Message Handlers](#4-registration-of-message-handlers)
+    - [5. Registration of Command Handlers](#5-registration-of-command-handlers)
+- [Configuration](#configuration)
 
-```shell
-npm i @metafoks/telegram-bot
-```
+## Installation
 
-Add configuration to your `config/config.json` file:
+### 1. Project Preparation
+
+1. You need to install and configure the [Metafoks Application](https://github.com/Meatafoks/Application).
+2. Install the extension from NPM: `npm i @metafoks/telegram-bot`.
+
+### 2. Configuration
+
+Add the following information to the config/config.json configuration file:
 
 ```json
 {
   "telegramBot": {
-    "token": "botFatherToken"
+    "token": "bot_father_token_api"
   }
 }
 ```
 
-Install extension to your Metafoks Application
+For more details on how to obtain a token for the bot, please refer to the Telegram documentation.
+
+### 3. Installation of the Extension in the Project
+
+Use the MetafoksApplication annotation with the with parameter:
 
 ```typescript
 import { MetafoksApplication } from "@metafoks/app";
@@ -35,35 +50,40 @@ class Application {
     start() {
         this.deps.bot.start();
     }
+
 }
 ```
 
-Now your bot is started!
+Also, make sure to import the bot component and start it.
 
-## Handling messages
+### 4. Registration of Message Handlers
 
-Create new component:
+To run the bot, you need to create a message handler component: create a file called messageHandler.component.ts
+anywhere in the project.
 
 ```typescript
-import { Component } from "@metafoks/app";
-import { TelegramMessageHandler } from "@metafoks/telegram-bot";
+// file: messageHandler.component.ts
+// imports...
 
+// telegramMessageHandler - mandatory name for the component
 @Component( "telegramMessageHandler" )
-export default class TelegramMessageHandlerComponent implements TelegramMessageHandler {
+export default class MessageHandlerComponent implements TelegramMessageHandler {
     onMessage(event: NewMessageEvent) {
         event.chat.sendMessage( "Hi!" );
     }
 }
 ```
 
-## Handling commands
+Once this is done, you can start the bot and send any message.
 
-First you should set supported comments in config
+## 5. Registration of Command Handlers
+
+First, you need to register the commands:
 
 ```json
 {
   "telegramBot": {
-    "token": "botFatherToken",
+    "token": "bot_father_token_api",
     "supportedCommands": [
       "hello"
     ]
@@ -71,18 +91,35 @@ First you should set supported comments in config
 }
 ```
 
-Then you need to create command handler:
+Next, create a file called commandHandler.component.ts anywhere in the project.
 
 ```typescript
-import { Component } from "@metafoks/app";
-import { TelegramCommandHandler } from "@metafoks/telegram-bot";
+// file: commandHandler.component.ts
+// imports...
 
+// telegramCommandHandler - mandatory name for the component
 @Component( "telegramCommandHandler" )
-export default class TelegramMessageHandlerComponent implements TelegramCommandHandler {
+export default class CommandHandlerComponent implements TelegramCommandHandler {
     onCommand(event: NewCommandEvent) {
-        if(event.command === "hello") {
+        if (event.command === "hello") {
             event.chat.sendMessage( "Hi!" );
         }
     }
 }
 ```
+
+## Configuration
+
+To configure the bot, create a telegramBot section in the config/config.json file.
+
+```json
+{
+  "telegramBot": {}
+}
+```
+
+- `token` (string) - The token for the Telegram bot
+- `supportedCommands` (string) - The list of supported commands
+- `creatorId` (string?) - The ID of the bot creator (required for critical messages)
+- `allowSendStartMessage` (boolean?) - Default: true. If set to true, the creatorId will receive a message when the bot
+  starts or restarts.
