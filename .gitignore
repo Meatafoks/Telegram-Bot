@@ -1,6 +1,8 @@
 *
 !src/
 !src/**/*
+!locale
+!locale/**/*
 !.gitignore
 !.npmignore
 !package.json
