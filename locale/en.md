@@ -37,22 +37,20 @@ Use the MetafoksApplication annotation with the with parameter:
 
 ```typescript
 import { MetafoksApplication } from "@metafoks/app";
-import { telegramBotExtension, BotComponent } from "@metafoks/telegram-bot";
+import { telegramBotExtension } from "@metafoks/telegram-bot";
 
 @MetafoksApplication( {
     with: [telegramBotExtension]
 } )
 class Application {
-    constructor(private deps: { bot: BotComponent }) {}
+    constructor(private deps: {}) {}
 
     start() {
-        this.deps.bot.start();
+        // ...
     }
 
 }
 ```
-
-Also, make sure to import the bot component and start it.
 
 ### 4. Registration of Message Handlers
 

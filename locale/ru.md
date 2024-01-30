@@ -36,21 +36,19 @@
 
 ```typescript
 import { MetafoksApplication } from "@metafoks/app";
-import { telegramBotExtension, BotComponent } from "@metafoks/telegram-bot";
+import { telegramBotExtension } from "@metafoks/telegram-bot";
 
 @MetafoksApplication( {
     with: [telegramBotExtension]
 } )
 class Application {
-    constructor(private deps: { bot: BotComponent }) {}
+    constructor(private deps: {}) {}
 
     start() {
-        this.deps.bot.start();
+        // ...
     }
 }
 ```
-
-Также необходимо подключить компонент бота и запустить его.
 
 ### 4. Регистрация обработчика сообщений
 

@@ -3,6 +3,7 @@ export interface TelegramBotConfig {
     creatorId?: string;
     allowSendStartMessage?: boolean;
     supportedCommands?: string[];
+    autorun?: boolean;
 }
 
 export interface ConfigWithTelegram {

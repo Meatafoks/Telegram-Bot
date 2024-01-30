@@ -39,22 +39,19 @@ Use the MetafoksApplication annotation with the with parameter:
 
 ```typescript
 import { MetafoksApplication } from "@metafoks/app";
-import { telegramBotExtension, BotComponent } from "@metafoks/telegram-bot";
+import { telegramBotExtension } from "@metafoks/telegram-bot";
 
 @MetafoksApplication( {
     with: [telegramBotExtension]
 } )
 class Application {
-    constructor(private deps: { bot: BotComponent }) {}
+    constructor(private deps: {}) {}
 
     start() {
-        this.deps.bot.start();
+        // ...
     }
-
 }
 ```
-
-Also, make sure to import the bot component and start it.
 
 ### 4. Registration of Message Handlers
 
@@ -123,3 +120,4 @@ To configure the bot, create a telegramBot section in the config/config.json fil
 - `creatorId` (string?) - The ID of the bot creator (required for critical messages)
 - `allowSendStartMessage` (boolean?) - Default: true. If set to true, the creatorId will receive a message when the bot
   starts or restarts.
+- `autorun` (boolean?) - Default: true. Allows bot starts with application
