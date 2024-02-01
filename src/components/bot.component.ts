@@ -4,6 +4,8 @@ import { ChatLoader } from '../loaders';
 import { ConfigWithTelegram } from '../config';
 import { TelegramCommandHandler, TelegramMessageHandler } from '../abstract';
 
+import { TelegramFile } from '../types/telegramFile';
+
 export class BotComponent {
     private logger = createLogger(BotComponent);
 
@@ -108,5 +110,13 @@ export class BotComponent {
         });
 
         this.logger.info('telegraf started');
+    }
+
+    public async getFile(fileId: string): Promise<TelegramFile> {
+        return this.deps.telegraf.telegram.getFile(fileId);
+    }
+
+    public async getFileLink(fileId: string | TelegramFile): Promise<URL> {
+        return this.deps.telegraf.telegram.getFileLink(fileId);
     }
 }

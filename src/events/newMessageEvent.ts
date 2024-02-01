@@ -1,5 +1,5 @@
-import { Chat } from '../components/chat';
-import { TelegramContextUpdate, TelegramMessage } from '../types';
+import { Chat } from '../components';
+import { TelegramMessage, TelegramContextUpdate } from '../types';
 
 export interface NewMessageEvent {
     context: TelegramContextUpdate;
