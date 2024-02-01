@@ -103,7 +103,10 @@ export class BotComponent {
             this.logger.info('bot stopped by SIGTERM');
         });
 
+        telegraf.launch().catch(reason => {
+            throw reason;
+        });
+
         this.logger.info('telegraf started');
-        await telegraf.launch();
     }
 }

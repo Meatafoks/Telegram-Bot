@@ -1,4 +1,6 @@
 *
+!test/
+!test/**/*
 !src/
 !src/**/*
 !locale
