@@ -1,7 +1,22 @@
 import { Telegram } from 'telegraf';
 import { createLogger } from '@metafoks/app';
+import {
+    TelegramChatAction,
+    TelegramDocumentExtraPayload,
+    TelegramDocumentPayload,
+    TelegramPhotoExtraPayload,
+    TelegramPhotoPayload,
+    TelegramPollExtraPayload,
+    TelegramPollPayload,
+    TelegramStickerExtraPayload,
+    TelegramStickerPayload,
+    TelegramVoiceExtraPayload,
+    TelegramVoicePayload,
+} from '../types';
 
 export class Chat {
+    public static CHAT_ACTION_DELAY = 2500;
+
     private static chats: { [chatId: string]: Chat } = {};
 
     public static chat(deps: { chatId: string; telegram: Telegram }): Chat {
@@ -25,27 +40,112 @@ export class Chat {
     }
 
     /**
-     * Отправляет статус "набирает сообщение"
+     * Forwards the message
+     * @param props
      */
-    public async sendTyping() {
-        const { telegram, chatId } = this.deps;
-        const diff = new Date().getTime() - this.lastTypingSend;
-        if (diff > 2500) {
-            this.lastTypingSend = new Date().getTime();
-            await telegram.sendChatAction(chatId, 'typing');
-        }
+    public async forwardMessage(props: { fromChatId: number | string; messageId: number }) {
+        return await this.deps.telegram.forwardMessage(this.chatId, props.fromChatId, props.messageId);
+    }
+
+    public async sendAction(action: TelegramChatAction) {
+        this.logger.debug(`sending action=${action}`);
+        const result = await this.deps.telegram.sendChatAction(this.chatId, action);
+
+        this.logger.info(`sent action=${action}`);
+        return result;
+    }
+
+    public async sendPhoto(photo: TelegramPhotoPayload, extra?: TelegramPhotoExtraPayload) {
+        this.logger.debug(`sending photo message with extra=${extra}`);
+        this.logger.trace(photo);
+        const result = await this.deps.telegram.sendPhoto(this.chatId, photo, extra);
+
+        this.logger.info(`sent photo to chat with extra=${extra}`);
+        return result;
+    }
+
+    public async sendDocument(document: TelegramDocumentPayload, extra?: TelegramDocumentExtraPayload) {
+        this.logger.debug(`sending document message with extra=${JSON.stringify(extra)}`);
+        this.logger.trace(document);
+        const result = await this.deps.telegram.sendDocument(this.chatId, document, extra);
+
+        this.logger.info(`sent document to chat with extra=${JSON.stringify(extra)}`);
+        return result;
+    }
+
+    public async sendSticker(sticker: TelegramStickerPayload, extra?: TelegramStickerExtraPayload) {
+        this.logger.debug(`sending sticker message with extra=${JSON.stringify(extra)}`);
+        this.logger.trace(sticker);
+        const result = await this.deps.telegram.sendSticker(this.chatId, sticker, extra);
+
+        this.logger.info(`sent sticker to chat with extra=${JSON.stringify(extra)}`);
+        return result;
+    }
+
+    public async sendPoll(poll: TelegramPollPayload, extra?: TelegramPollExtraPayload) {
+        this.logger.debug(`sending poll=${JSON.stringify(poll)} message with extra=${JSON.stringify(extra)}`);
+        const result = await this.deps.telegram.sendPoll(this.chatId, poll.question, poll.answers, extra);
+
+        this.logger.info(`sent poll=${JSON.stringify(poll)} message with extra=${JSON.stringify(extra)}`);
+        return result;
+    }
+
+    public async sendVoice(voice: TelegramVoicePayload, extra?: TelegramVoiceExtraPayload) {
+        this.logger.debug(`sending voice message with extra=${extra}`);
+        this.logger.trace(voice);
+        const result = await this.deps.telegram.sendVoice(this.chatId, voice, extra);
+
+        this.logger.info(`sent voice to chat with extra=${extra}`);
+        return result;
+    }
+
+    public async sendVoiceFromArrayBuffer(message: ArrayBuffer) {
+        return await this.sendVoice({ source: Buffer.from(message) });
     }
 
     /**
-     * Отправляет статус "набирает сообщение"
+     * Sending an action per 2500 ms. You can simply call it anytime and don't worry about timing
+     * @param action
      */
-    public async sendVoicing() {
-        const { telegram, chatId } = this.deps;
+    public async sendActionThrottled(action: TelegramChatAction) {
         const diff = new Date().getTime() - this.lastTypingSend;
-        if (diff > 2500) {
+        if (diff > Chat.CHAT_ACTION_DELAY) {
             this.lastTypingSend = new Date().getTime();
-            await telegram.sendChatAction(chatId, 'record_voice');
+            return await this.sendAction(action);
         }
+        return false;
+    }
+
+    /**
+     * Sending typing action with throttle
+     * @see Chat.sendActionThrottled - about throttle
+     */
+    public async sendTypingActionThrottled() {
+        await this.sendActionThrottled('typing');
+    }
+
+    /**
+     Sending upload document action with throttle
+     @see Chat.sendActionThrottled - about throttle
+     */
+    public async sendDocumentUploadingActionThrottled() {
+        await this.sendActionThrottled('upload_document');
+    }
+
+    /**
+     Sending upload document action with throttle
+     @see Chat.sendActionThrottled - about throttle
+     */
+    public async sendPhotoUploadingActionThrottled() {
+        await this.sendActionThrottled('upload_photo');
+    }
+
+    /**
+     Sending recording the voice action with throttle
+     @see Chat.sendActionThrottled - about throttle
+     */
+    public async sendVoicingActionThrottled() {
+        await this.sendActionThrottled('record_voice');
     }
 
     /**
@@ -90,16 +190,5 @@ export class Chat {
         }
 
         this.logger.info(`sent message to chat ${chatId}`);
-    }
-
-    /**
-     * Отправляет голосовое сообщение в чат
-     * @param message
-     */
-    public async sendVoice(message: ArrayBuffer) {
-        const { telegram, chatId } = this.deps;
-
-        await telegram.sendVoice(chatId, { source: Buffer.from(message) });
-        this.logger.info(`sent voice to chat=${chatId}`);
     }
 }
