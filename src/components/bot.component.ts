@@ -4,7 +4,7 @@ import { ChatLoader } from '../loaders';
 import { ConfigWithTelegram } from '../config';
 import { TelegramCommandHandler, TelegramMessageHandler } from '../abstract';
 
-import { TelegramFile } from '../types/telegramFile';
+import { TelegramFile } from '../types';
 
 export class BotComponent {
     private logger = createLogger(BotComponent);
@@ -110,6 +110,12 @@ export class BotComponent {
         });
 
         this.logger.info('telegraf started');
+        if (this.deps.config.telegramBot.allowSendStartMessage !== false) {
+            if (this.deps.config.telegramBot.creatorId) {
+                const chat = this.deps.getChat(this.deps.config.telegramBot.creatorId);
+                await chat.sendMessage('Бот успешно запущен и готов к работе');
+            }
+        }
     }
 
     public async getFile(fileId: string): Promise<TelegramFile> {
