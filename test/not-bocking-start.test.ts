@@ -1,8 +1,17 @@
 import { MetafoksAbstractApplication, MetafoksContext } from '@metafoks/app';
 import { BotComponent, ConfigWithTelegram, telegramBotExtension } from '../src';
-import { telegrafMock } from './telegraf.mock';
 
-telegrafMock();
+jest.mock('telegraf', () => ({
+    Telegraf: class {
+        launch() {
+            return new Promise(resolve => {
+                setTimeout(resolve, 1000000);
+            });
+        }
+        // command = commandMock;
+        on = jest.fn();
+    },
+}));
 
 describe('start function should not block application', () => {
     let app!: MetafoksAbstractApplication;

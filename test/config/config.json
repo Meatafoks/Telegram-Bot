@@ -1,0 +1,8 @@
+{
+  "telegramBot": {
+    "token": "123",
+    "supportedCommands": [
+      "start"
+    ]
+  }
+}

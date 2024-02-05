@@ -1,4 +1,4 @@
-import { createLogger } from '@metafoks/app';
+import { createLogger, MetafoksContext } from '@metafoks/app';
 import { Telegraf } from 'telegraf';
 import { ChatLoader } from '../loaders';
 import { ConfigWithTelegram } from '../config';
@@ -54,7 +54,7 @@ export class BotComponent {
         const { telegramBot } = config;
 
         if ((telegramBot.supportedCommands ?? []).length > 0) {
-            if (!('telegramCommandHandler' in this.deps)) {
+            if (!MetafoksContext.getContext().getContainer().hasRegistration('telegramCommandHandler')) {
                 this.logger.error('telegramCommandHandler not found');
                 return;
             }

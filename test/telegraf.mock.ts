@@ -1,4 +1,6 @@
 export function telegrafMock() {
+    const commandMock = jest.fn();
+
     jest.mock('telegraf', () => ({
         Telegraf: class {
             launch() {
@@ -6,8 +8,10 @@ export function telegrafMock() {
                     setTimeout(resolve, 1000000);
                 });
             }
-
+            command = commandMock;
             on = jest.fn();
         },
     }));
+
+    return { commandMock };
 }
