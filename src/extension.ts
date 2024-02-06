@@ -1,17 +1,10 @@
-import { createExtension, LoggerFactory, MetafoksContext } from '@metafoks/app';
+import { createExtension } from '@metafoks/app';
 import telegramLoader from './loaders/telegram.loader';
 import telegrafLoader from './loaders/telegraf.loader';
 import getChatLoader from './loaders/getChat.loader';
 import { BotComponent } from './components';
-import { ConfigWithTelegram } from './config';
 
 export const telegramBotExtension = createExtension(context => {
-    const logger = LoggerFactory.createLoggerByName('TelegramBotConnector');
-    const config = context.getConfig<ConfigWithTelegram>();
-
-    logger.level = config.metafoks?.logger?.level?.system ?? 'debug';
-    logger.debug('connecting telegram bot to Metafoks App Context');
-
     // Loaders
     context.addFunction('telegram', telegramLoader);
     context.addFunction('telegraf', telegrafLoader);
@@ -20,15 +13,10 @@ export const telegramBotExtension = createExtension(context => {
     // Services
     context.addClass('bot', BotComponent);
 
-    logger.info('connected telegram bot to Metafoks App Context');
-
     return {
         identifier: 'ru.metafoks.extension.TelegramBot',
         autorun: async () => {
-            if (config.telegramBot?.autorun !== false) {
-                logger.info('config.telegramBot.autorun enabled by default');
-                await context.resolve<BotComponent>('bot').start();
-            }
+            await context.resolve<BotComponent>('bot').start();
         },
     };
 });

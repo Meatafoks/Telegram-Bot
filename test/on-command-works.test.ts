@@ -1,24 +1,25 @@
-import { createAbstractApplication, MetafoksAbstractApplication, MetafoksContext } from '@metafoks/app';
+import { createAbstractApplication } from '@metafoks/app';
 import { BotComponent, ConfigWithTelegram, telegramBotExtension } from '../src';
 
 describe('on command feature works', () => {
-    let app!: MetafoksAbstractApplication;
-
     const commandMock = jest.fn();
-    const launchMock = jest.fn();
 
-    it('should work without command handler', () => {
+    it('should work without command handler', async () => {
         // given
-        const app = createAbstractApplication<ConfigWithTelegram>({
-            with: [telegramBotExtension],
-            config: { overrides: { telegramBot: { autorun: false, token: '123' } } },
+        const app = await createAbstractApplication<ConfigWithTelegram>({
+            extensions: [telegramBotExtension],
+            mocks: {
+                telegramMessageHandler: { onMessage: () => null },
+                telegramCommandHandler: { onCommand: () => null },
+                telegraf: {
+                    launch: async () => ({ result: 'ok' }),
+                    on: jest.fn(),
+                    command: commandMock,
+                },
+            },
         });
 
-        // when
-        const bot = app.resolve<BotComponent>('bot');
-        bot.startCommandsHandling();
-
         // then
-        // ?
+        expect(commandMock).toHaveBeenCalled();
     });
 });

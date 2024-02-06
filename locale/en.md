@@ -36,12 +36,11 @@ For more details on how to obtain a token for the bot, please refer to the Teleg
 Use the MetafoksApplication annotation with the with parameter:
 
 ```typescript
-import { MetafoksApplication } from "@metafoks/app";
+import { MetafoksApplication, With } from "@metafoks/app";
 import { telegramBotExtension } from "@metafoks/telegram-bot";
 
-@MetafoksApplication( {
-    with: [telegramBotExtension]
-} )
+@MetafoksApplication
+@With(telegramBotExtension)
 class Application {
     constructor(private deps: {}) {}
 

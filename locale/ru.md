@@ -39,12 +39,11 @@
 Используйте аннотацию `MetafoksApplication`, ее параметр `with`.
 
 ```typescript
-import { MetafoksApplication } from "@metafoks/app";
+import { MetafoksApplication, With } from "@metafoks/app";
 import { telegramBotExtension } from "@metafoks/telegram-bot";
 
-@MetafoksApplication( {
-    with: [telegramBotExtension]
-} )
+@MetafoksApplication
+@With(telegramBotExtension)
 class Application {
     constructor(private deps: {}) {}
 
