@@ -4,6 +4,7 @@ import {
     TelegramChatAction,
     TelegramDocumentExtraPayload,
     TelegramDocumentPayload,
+    TelegramMessageExtraPayload,
     TelegramPhotoExtraPayload,
     TelegramPhotoPayload,
     TelegramPollExtraPayload,
@@ -151,25 +152,28 @@ export class Chat {
     /**
      * Отправляет сообщение в markdown разметке
      * @param message
+     * @param extra
      */
-    public async sendMarkdownMessage(message: string) {
+    public async sendMarkdownMessage(message: string, extra?: TelegramMessageExtraPayload) {
         const { telegram, chatId } = this.deps;
         await telegram.sendMessage(chatId, {
             parse_mode: 'markdown',
             text: message,
+            ...(extra ?? {}),
         } as any);
     }
 
-    public async sendRawTextMessage(message: string) {
+    public async sendRawTextMessage(message: string, extra?: TelegramMessageExtraPayload) {
         const { telegram, chatId } = this.deps;
-        await telegram.sendMessage(chatId, message);
+        await telegram.sendMessage(chatId, message, extra);
     }
 
     /**
      * Отправляет сообщение в чат
      * @param message
+     * @param extra
      */
-    public async sendMessage(message: string) {
+    public async sendMessage(message: string, extra?: TelegramMessageExtraPayload) {
         const { chatId } = this.deps;
 
         try {
@@ -182,7 +186,7 @@ export class Chat {
             // Если это ошибка с составлением маркдауна - пробуем отправить чистый текст
             if ('response' in e && e.response && 'error_code' in e.response && e.response.error_code == 400) {
                 this.logger.debug(`trying to send raw text message to chat ${chatId}`);
-                await this.sendRawTextMessage(message);
+                await this.sendRawTextMessage(message, extra);
             } else {
                 // Иначе выбрасываем исключение в retryer
                 throw e;

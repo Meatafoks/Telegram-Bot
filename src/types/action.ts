@@ -28,3 +28,5 @@ export type TelegramStickerExtraPayload = tt.ExtraSticker;
 
 export type TelegramPollPayload = { question: string; answers: string[] };
 export type TelegramPollExtraPayload = tt.ExtraPoll;
+
+export type TelegramMessageExtraPayload = tt.ExtraReplyMessage;
