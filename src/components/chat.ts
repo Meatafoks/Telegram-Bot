@@ -155,6 +155,7 @@ export class Chat {
 
         const result = await this.deps.telegram.deleteMessage(this.chatId, messageId);
         this.logger.info(`deleted message=${messageId}`);
+
         return result;
     }
 

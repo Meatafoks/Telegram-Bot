@@ -34,6 +34,18 @@
     "ts-jest": "29.0.5",
     "typescript": "^5.3.3"
   },
+  "prettier": "@metafoks/prettier",
+  "eslintConfig": {
+    "extends": [
+      "@metafoks/eslint-config"
+    ],
+    "env": {
+      "jest": true
+    },
+    "plugins": [
+      "jest"
+    ]
+  },
   "dependencies": {
     "@metafoks/app": "^1.1.9",
     "telegraf": "^4.15.3"
