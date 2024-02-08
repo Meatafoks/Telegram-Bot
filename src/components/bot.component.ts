@@ -1,10 +1,16 @@
-import { createLogger, MetafoksRunApplication, Reflection } from '@metafoks/app';
+import { createLogger, Reflection } from '@metafoks/app';
 import { Telegraf } from 'telegraf';
 import { ChatLoader } from '../loaders';
 import { ConfigWithTelegram } from '../config';
-import { TelegramCommandHandler, TelegramMessageHandler } from '../abstract';
+import {
+    ITelegramCommandHandler,
+    ITelegramMessageHandler,
+    ITelegramMessageHandlerBinding,
+    ITelegramCommandHandlerBinding,
+} from '../abstract';
 
 import { TelegramFile } from '../types';
+import { MessageEvent } from '../events';
 
 export class BotComponent {
     private logger = createLogger(BotComponent);
@@ -13,8 +19,8 @@ export class BotComponent {
         private deps: {
             config: ConfigWithTelegram;
             telegraf: Telegraf;
-            telegramMessageHandler: TelegramMessageHandler;
-            telegramCommandHandler: TelegramCommandHandler;
+            telegramMessageHandler: ITelegramMessageHandler | ITelegramMessageHandlerBinding;
+            telegramCommandHandler: ITelegramCommandHandler | ITelegramCommandHandlerBinding;
             getChat: ChatLoader;
             reflection: Reflection;
         },
@@ -24,7 +30,14 @@ export class BotComponent {
      * Starts messages handling
      */
     startMessageHandling() {
-        const { telegraf, telegramMessageHandler, getChat } = this.deps;
+        const { telegraf, getChat } = this.deps;
+
+        if (!this.deps.reflection.has('telegramMessageHandler')) {
+            this.logger.error('component or binding `telegramMessageHandler` is undefined!');
+            return;
+        }
+
+        const { telegramMessageHandler } = this.deps;
 
         telegraf.on('message', async context => {
             const { chat, message } = context;
@@ -32,12 +45,13 @@ export class BotComponent {
             if (chat) {
                 const instance = getChat(chat.id);
                 this.logger.debug(`on received message from chatId=${instance.chatId}`);
-                await telegramMessageHandler.onMessage({
-                    context,
-                    chat: instance,
-                    message,
-                    chatId: instance.chatId,
-                });
+                const event = { context, chat: instance, message, chatId: instance.chatId };
+
+                if (typeof telegramMessageHandler === 'function') {
+                    await telegramMessageHandler(event);
+                } else {
+                    await telegramMessageHandler.onMessage(event);
+                }
             } else {
                 this.logger.warn('chat not found in context');
                 this.logger.trace(JSON.stringify(context));
@@ -65,16 +79,16 @@ export class BotComponent {
             for (const command of telegramBot.supportedCommands ?? []) {
                 this.logger.debug(`registering command=${command} handler`);
                 telegraf.command(command, async context => {
-                    const { chat, message } = context;
+                    const { chat } = context;
                     if (chat) {
                         const instance = getChat(chat.id);
                         this.logger.debug(`on received command=${command} from chatId=${instance.chatId}`);
-                        await telegramCommandHandler.onCommand({
-                            context,
-                            chat: instance,
-                            chatId: instance.chatId,
-                            command,
-                        });
+                        const event = { context, chat: instance, chatId: instance.chatId, command };
+                        if (typeof telegramCommandHandler === 'function') {
+                            await telegramCommandHandler(event);
+                        } else {
+                            await telegramCommandHandler.onCommand(event);
+                        }
                     } else {
                         this.logger.warn('chat not found in command context');
                         this.logger.trace(JSON.stringify(context));

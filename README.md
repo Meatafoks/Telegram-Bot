@@ -64,7 +64,7 @@ anywhere in the project.
 // telegramMessageHandler - mandatory name for the component
 @Component( "telegramMessageHandler" )
 export default class MessageHandlerComponent implements TelegramMessageHandler {
-    onMessage(event: NewMessageEvent) {
+    onMessage(event: MessageEvent) {
         event.chat.sendMessage( "Hi!" );
     }
 }

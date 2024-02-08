@@ -3,3 +3,4 @@ import { TelegramServiceMessage } from './telegramServiceMessage';
 import { TelegramCommonMessage } from './telegramCommonMessage';
 
 export type TelegramMessage = tg.Message | TelegramServiceMessage | TelegramCommonMessage;
+export type TelegramChat = tg.Chat;

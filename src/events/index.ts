@@ -1,2 +1,2 @@
-export * from './newCommandEvent';
-export * from './newMessageEvent';
+export * from './CommandEvent';
+export * from './MessageEvent';

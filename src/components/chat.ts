@@ -11,6 +11,7 @@ import {
     TelegramPollPayload,
     TelegramStickerExtraPayload,
     TelegramStickerPayload,
+    TelegramTextMessage,
     TelegramVoiceExtraPayload,
     TelegramVoicePayload,
 } from '../types';
@@ -122,7 +123,7 @@ export class Chat {
      * @see Chat.sendActionThrottled - about throttle
      */
     public async sendTypingActionThrottled() {
-        await this.sendActionThrottled('typing');
+        return await this.sendActionThrottled('typing');
     }
 
     /**
@@ -130,7 +131,7 @@ export class Chat {
      @see Chat.sendActionThrottled - about throttle
      */
     public async sendDocumentUploadingActionThrottled() {
-        await this.sendActionThrottled('upload_document');
+        return await this.sendActionThrottled('upload_document');
     }
 
     /**
@@ -138,7 +139,7 @@ export class Chat {
      @see Chat.sendActionThrottled - about throttle
      */
     public async sendPhotoUploadingActionThrottled() {
-        await this.sendActionThrottled('upload_photo');
+        return await this.sendActionThrottled('upload_photo');
     }
 
     /**
@@ -146,7 +147,15 @@ export class Chat {
      @see Chat.sendActionThrottled - about throttle
      */
     public async sendVoicingActionThrottled() {
-        await this.sendActionThrottled('record_voice');
+        return await this.sendActionThrottled('record_voice');
+    }
+
+    public async deleteMessage(messageId: number) {
+        this.logger.debug(`deleting message=${messageId}`);
+
+        const result = await this.deps.telegram.deleteMessage(this.chatId, messageId);
+        this.logger.info(`deleted message=${messageId}`);
+        return result;
     }
 
     /**
@@ -154,18 +163,24 @@ export class Chat {
      * @param message
      * @param extra
      */
-    public async sendMarkdownMessage(message: string, extra?: TelegramMessageExtraPayload) {
+    public async sendMarkdownMessage(
+        message: string,
+        extra?: TelegramMessageExtraPayload,
+    ): Promise<TelegramTextMessage> {
         const { telegram, chatId } = this.deps;
-        await telegram.sendMessage(chatId, {
+        return await telegram.sendMessage(chatId, {
             parse_mode: 'markdown',
             text: message,
             ...(extra ?? {}),
         } as any);
     }
 
-    public async sendRawTextMessage(message: string, extra?: TelegramMessageExtraPayload) {
+    public async sendRawTextMessage(
+        message: string,
+        extra?: TelegramMessageExtraPayload,
+    ): Promise<TelegramTextMessage> {
         const { telegram, chatId } = this.deps;
-        await telegram.sendMessage(chatId, message, extra);
+        return await telegram.sendMessage(chatId, message, extra);
     }
 
     /**
@@ -173,26 +188,29 @@ export class Chat {
      * @param message
      * @param extra
      */
-    public async sendMessage(message: string, extra?: TelegramMessageExtraPayload) {
+    public async sendMessage(
+        message: string,
+        extra?: TelegramMessageExtraPayload,
+    ): Promise<TelegramTextMessage> {
         const { chatId } = this.deps;
 
         try {
             this.logger.debug('trying to send message with markdown....');
             // Отправляем маркдаун сообщение
-            await this.sendMarkdownMessage(message);
+            return await this.sendMarkdownMessage(message);
         } catch (e: any) {
             this.logger.warn(`error while sending markdown message to ${chatId}`);
 
             // Если это ошибка с составлением маркдауна - пробуем отправить чистый текст
             if ('response' in e && e.response && 'error_code' in e.response && e.response.error_code == 400) {
                 this.logger.debug(`trying to send raw text message to chat ${chatId}`);
-                await this.sendRawTextMessage(message, extra);
+                const result = await this.sendRawTextMessage(message, extra);
+                this.logger.info(`sent message to chat ${chatId}`);
+                return result;
             } else {
                 // Иначе выбрасываем исключение в retryer
                 throw e;
             }
         }
-
-        this.logger.info(`sent message to chat ${chatId}`);
     }
 }

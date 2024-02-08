@@ -64,8 +64,8 @@ class Application {
 
 // telegramMessageHandler - обязательно имя для компонента
 @Component( "telegramMessageHandler" )
-export default class MessageHandlerComponent implements TelegramMessageHandler {
-    async onMessage(event: NewMessageEvent): Promise<void> {
+export default class MessageHandlerComponent implements ITelegramMessageHandler {
+    async onMessage(event: MessageEvent): Promise<void> {
         await event.chat.sendMessage( "Hi!" );
     }
 }
@@ -96,8 +96,8 @@ export default class MessageHandlerComponent implements TelegramMessageHandler {
 
 // telegramMessageHandler - обязательно имя для компонента
 @Component( "telegramCommandHandler" )
-export default class CommandHandlerComponent implements TelegramCommandHandler {
-    onCommand(event: NewCommandEvent) {
+export default class CommandHandlerComponent implements ITelegramCommandHandler {
+    onCommand(event: CommandEvent) {
         if (event.command === "hello") {
             event.chat.sendMessage( "Hi!" );
         }
@@ -143,10 +143,10 @@ if (TelegramMessageType.isPhotoMessage( message )) {
 
 ```typescript
 @Component( "telegramMessageHandler" )
-export default class MessageHandlerComponent implements TelegramMessageHandler {
+export default class MessageHandlerComponent implements ITelegramMessageHandler {
     constructor(private deps: { bot: BotComponent }) {}
 
-    async onMessage(event: NewMessageEvent): Promise<void> {
+    async onMessage(event: MessageEvent): Promise<void> {
         const {message} = event.message;
 
         if (TelegramMessageType.isPhotoMessage( message )) {

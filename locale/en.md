@@ -63,7 +63,7 @@ anywhere in the project.
 // telegramMessageHandler - mandatory name for the component
 @Component( "telegramMessageHandler" )
 export default class MessageHandlerComponent implements TelegramMessageHandler {
-    onMessage(event: NewMessageEvent) {
+    onMessage(event: MessageEvent) {
         event.chat.sendMessage( "Hi!" );
     }
 }
@@ -95,7 +95,7 @@ Next, create a file called commandHandler.component.ts anywhere in the project.
 // telegramCommandHandler - mandatory name for the component
 @Component( "telegramCommandHandler" )
 export default class CommandHandlerComponent implements TelegramCommandHandler {
-    onCommand(event: NewCommandEvent) {
+    onCommand(event: CommandEvent) {
         if (event.command === "hello") {
             event.chat.sendMessage( "Hi!" );
         }

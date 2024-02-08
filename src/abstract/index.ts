@@ -1,2 +1,2 @@
-export * from './telegramMessageHandler';
-export * from './telegramCommandHandler';
+export * from './ITelegramMessageHandler';
+export * from './ITelegramCommandHandler';
