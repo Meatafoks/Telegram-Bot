@@ -34,48 +34,8 @@
     "ts-jest": "29.0.5",
     "typescript": "^5.3.3"
   },
-  "prettier": "@metafoks/prettier",
-  "eslintConfig": {
-    "extends": [
-      "@metafoks/eslint-config"
-    ],
-    "env": {
-      "jest": true
-    },
-    "plugins": [
-      "jest"
-    ]
-  },
   "dependencies": {
-    "@metafoks/app": "^1.1.8",
+    "@metafoks/app": "^1.1.9",
     "telegraf": "^4.15.3"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "html",
-      "json"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "coveragePathIgnorePatterns": [
-      "node_modules",
-      "<rootDir>/src/index.ts",
-      ".mock.ts"
-    ],
-    "coverageDirectory": "<rootDir>/coverage/",
-    "testRegex": "(/test/.*\\.(test|spec))\\.(jsx?|tsx?|ts|js)$",
-    "transform": {
-      "^.+\\.(t|j)sx?$": "ts-jest"
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json",
-      "node",
-      "jsx",
-      "tsx"
-    ]
   }
 }
