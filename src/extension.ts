@@ -3,6 +3,7 @@ import telegramLoader from './loaders/telegram.loader';
 import telegrafLoader from './loaders/telegraf.loader';
 import getChatLoader from './loaders/getChat.loader';
 import { BotComponent } from './components';
+import { TelegramDeliveryService } from './services/telegramDelivery.service';
 
 export const telegramBotExtension = createExtension(context => {
     // Loaders
@@ -10,7 +11,8 @@ export const telegramBotExtension = createExtension(context => {
     context.addFunction('telegraf', telegrafLoader);
     context.addFunction('getChat', getChatLoader);
 
-    // Services
+    // Components
+    context.addClass('telegramDeliveryService', TelegramDeliveryService);
     context.addClass('bot', BotComponent);
 
     return {

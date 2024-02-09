@@ -198,7 +198,7 @@ export class Chat {
         try {
             this.logger.debug('trying to send message with markdown....');
             // Отправляем маркдаун сообщение
-            return await this.sendMarkdownMessage(message);
+            return await this.sendMarkdownMessage(message, extra);
         } catch (e: any) {
             this.logger.warn(`error while sending markdown message to ${chatId}`);
 
