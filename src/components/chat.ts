@@ -15,6 +15,8 @@ import {
     TelegramVoiceExtraPayload,
     TelegramVoicePayload,
 } from '../types';
+import { FmtString } from 'telegraf/src/format';
+import * as tt from 'telegraf/src/telegram-types';
 
 export class Chat {
     public static CHAT_ACTION_DELAY = 2500;
@@ -63,6 +65,24 @@ export class Chat {
         const result = await this.deps.telegram.sendPhoto(this.chatId, photo, extra);
 
         this.logger.info(`sent photo to chat with extra=${extra}`);
+        return result;
+    }
+
+    public async editMessage(
+        messageId: number | undefined,
+        text: string | FmtString,
+        extra?: tt.ExtraEditMessageText,
+    ) {
+        this.logger.debug(`editing messageId=${messageId} in chatId=${this.chatId}`);
+        const result = await this.deps.telegram.editMessageText(
+            this.chatId,
+            messageId,
+            undefined,
+            text,
+            extra,
+        );
+
+        this.logger.debug(`edited messageId=${messageId} in chatId=${this.chatId}`);
         return result;
     }
 
