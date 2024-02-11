@@ -1,6 +1,6 @@
 {
   "name": "@metafoks/telegram-bot",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Metafoks telegram bot extension",
   "main": "lib/index.js",
   "files": [
