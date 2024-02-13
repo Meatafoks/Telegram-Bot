@@ -1,7 +1,5 @@
-import { TelegramDeliveryService } from '../src/services';
-import { TelegramMessageBuilder } from '../src/builders/telegramMessageBuilder';
+import { TelegramMessageBuilder, TelegramMessageType, TelegramDeliveryService } from '../src';
 import { createChatMock } from './createChatMock';
-import { TelegramMessageType } from '../src';
 
 describe('delivery service test', () => {
     const sendMessageFn = jest.fn((text: string) => ({ text }));

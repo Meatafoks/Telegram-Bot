@@ -1,4 +1,12 @@
-import { containerOf, MetafoksTestingApplication, With } from '@metafoks/app';
+import {
+    Binding,
+    Component,
+    MetafoksApplicationWithProperties,
+    Mock,
+    runMetafoksApplication,
+    TestingApplication,
+    With,
+} from '@metafoks/app';
 import {
     CommandEvent,
     MessageEvent,
@@ -6,6 +14,7 @@ import {
     TelegramMessageType,
     TelegramCommandHandler,
     TelegramMessageHandler,
+    telegramBotMockExtension,
 } from '../src';
 import { TelegrafMock } from '../src/testing';
 
@@ -13,11 +22,8 @@ describe('test annotations', () => {
     const messageFn = jest.fn();
     const commandFn = jest.fn();
 
-    const telegraf = new TelegrafMock();
-
-    @MetafoksTestingApplication({ mocks: { telegraf } })
-    @With(telegramBotExtension)
-    class App {
+    @Component('configuration')
+    class Configuration {
         @TelegramMessageHandler
         async messageHandler(event: MessageEvent) {
             if (TelegramMessageType.isTextMessage(event.message)) {
@@ -31,8 +37,15 @@ describe('test annotations', () => {
         }
     }
 
+    @With(telegramBotExtension, telegramBotMockExtension)
+    @Binding(Configuration)
+    @TestingApplication
+    @MetafoksApplicationWithProperties({ scanner: { enabled: false } })
+    class App {}
+
     it('should run on message on method', async () => {
-        const container = await containerOf(App);
+        const container = await runMetafoksApplication(App);
+        const telegraf = container.context.resolve<TelegrafMock>('telegraf');
 
         // when
         telegraf.pushMessage('hello!');
